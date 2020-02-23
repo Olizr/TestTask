@@ -5,7 +5,7 @@ import com.godel.olizarovich.models.Director;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class DirectorService {
@@ -22,6 +22,18 @@ public class DirectorService {
 
     public List<Director> getWithQuery(String query, Object[] params) {
         return directorAccess.getWithQuery(query, params);
+    }
+
+    public List<Director> getWithNames(String firstName, String lastName) {
+        List<Director> directors = directorAccess.getAll();
+        if (!firstName.isEmpty())
+            directors = directors.stream().filter(x -> x.getFirstName().equalsIgnoreCase(firstName))
+                .collect(Collectors.toList());
+
+        if (!lastName.isEmpty())
+            directors = directors.stream().filter(x -> x.getLastName().equalsIgnoreCase(lastName))
+                    .collect(Collectors.toList());
+        return directors;
     }
 
     public Director getById(long id) {

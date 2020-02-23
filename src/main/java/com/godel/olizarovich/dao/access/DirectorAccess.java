@@ -26,11 +26,11 @@ public class DirectorAccess implements Access<Director> {
     @Autowired
     public DirectorAccess(DataSource dataSource, QueryConstant queryConstant) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        SQL_FIND = queryConstant.FILM_SQL_FIND;
-        SQL_GET_ALL = queryConstant.FILM_SQL_GET_ALL;
-        SQL_INSERT = queryConstant.FILM_SQL_INSERT;
-        SQL_DELETE = queryConstant.FILM_SQL_DELETE;
-        SQL_UPDATE = queryConstant.FILM_SQL_UPDATE;
+        SQL_FIND = queryConstant.DIRECTOR_SQL_FIND;
+        SQL_GET_ALL = queryConstant.DIRECTOR_SQL_GET_ALL;
+        SQL_INSERT = queryConstant.DIRECTOR_SQL_INSERT;
+        SQL_DELETE = queryConstant.DIRECTOR_SQL_DELETE;
+        SQL_UPDATE = queryConstant.DIRECTOR_SQL_UPDATE;
     }
 
     @Override

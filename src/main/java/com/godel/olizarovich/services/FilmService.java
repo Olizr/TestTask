@@ -2,14 +2,17 @@ package com.godel.olizarovich.services;
 
 import com.godel.olizarovich.dao.access.DirectorAccess;
 import com.godel.olizarovich.dao.access.FilmAccess;
+import com.godel.olizarovich.models.Director;
 import com.godel.olizarovich.models.Film;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class FilmService {
@@ -44,6 +47,23 @@ public class FilmService {
 
     public boolean delete(Film film) {
         return filmAccess.delete(film);
+    }
+
+    public List<Film> getByDirectorName(String firstName, String lastName) {
+        List<Director> directors = directorService.getWithNames(firstName, lastName);
+
+        List<Film> films = filmAccess.getAll().stream().filter(film ->
+                directors.stream().anyMatch(dir ->
+                {
+                    if(dir.getId().equals(film.getDirectorId())) {
+                        film.setDirector(dir);
+                        return true;
+                    }
+                return false;
+                }))
+                .collect(Collectors.toList());
+
+        return findDirectors(films);
     }
 
     public List<Film> getByDates(LocalDate start, LocalDate end) {

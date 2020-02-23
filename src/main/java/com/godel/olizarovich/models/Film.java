@@ -1,10 +1,13 @@
 package com.godel.olizarovich.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.godel.olizarovich.serializers.FilmSerializer;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@JsonSerialize(using = FilmSerializer.class)
 public class Film {
     private Integer id;
     private Integer directorId;
