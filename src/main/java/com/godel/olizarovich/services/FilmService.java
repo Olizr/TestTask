@@ -1,6 +1,5 @@
 package com.godel.olizarovich.services;
 
-import com.godel.olizarovich.dao.access.DirectorAccess;
 import com.godel.olizarovich.dao.access.FilmAccess;
 import com.godel.olizarovich.models.Director;
 import com.godel.olizarovich.models.Film;
@@ -8,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class FilmService {
@@ -37,7 +33,7 @@ public class FilmService {
         return findDirector(filmAccess.get(id));
     }
 
-    public long add(Film film) {
+    public long save(Film film) {
         return filmAccess.save(film);
     }
 
@@ -73,6 +69,14 @@ public class FilmService {
         return findDirectors(films);
     }
 
+    public List<Film> getByDatesAndDirector(LocalDate start, LocalDate end, String firstName, String lastName) {
+        List<Film> films = getByDirectorName(firstName, lastName);
+
+        return films.stream().filter(x ->
+                x.getReleaseDate().compareTo(start) > -1 && x.getReleaseDate().compareTo(end) < 1)
+                .collect(Collectors.toList());
+    }
+
     private List<Film> findDirectors(List<Film> films) {
         for(Film film : films) {
             film.setDirector(directorService.getById(film.getDirectorId()));
@@ -82,7 +86,12 @@ public class FilmService {
     }
 
     private Film findDirector(Film film) {
-        film.setDirector(directorService.getById(film.getDirectorId()));
+        if (film != null)
+            film.setDirector(directorService.getById(film.getDirectorId()));
         return film;
+    }
+
+    public FilmAccess getFilmAccess() {
+        return filmAccess;
     }
 }

@@ -3,7 +3,9 @@ package com.godel.olizarovich.dao.access;
 import com.godel.olizarovich.config.QueryConstant;
 import com.godel.olizarovich.models.Director;
 import com.godel.olizarovich.dao.mappers.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Component
 public class DirectorAccess implements Access<Director> {
+    private Logger logger = Logger.getLogger(DirectorAccess.class);
     private final JdbcTemplate jdbcTemplate;
 
     private final String SQL_FIND;
@@ -35,7 +38,15 @@ public class DirectorAccess implements Access<Director> {
 
     @Override
     public Director get(long id) {
-        return jdbcTemplate.queryForObject(SQL_FIND, new Object[] {id}, new DirectorMapper());
+        Director director = null;
+        try {
+            director = jdbcTemplate.queryForObject(SQL_FIND, new Object[] {id}, new DirectorMapper());
+        }
+        catch (EmptyResultDataAccessException e) {
+            logger.error("Object \"Film\" with id " + id + " not exist in database");
+        }
+
+        return director;
     }
 
     @Override
@@ -59,8 +70,8 @@ public class DirectorAccess implements Access<Director> {
             return ps;
         }, keyHolder);
 
-        director.setId((int)keyHolder.getKey().longValue());
-        return keyHolder.getKey().longValue();
+        director.setId((int)keyHolder.getKeys().get("id"));
+        return director.getId();
     }
 
     @Override
@@ -75,5 +86,9 @@ public class DirectorAccess implements Access<Director> {
     @Override
     public boolean delete(Director director) {
         return jdbcTemplate.update(SQL_DELETE, director.getId()) > 0;
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
     }
 }

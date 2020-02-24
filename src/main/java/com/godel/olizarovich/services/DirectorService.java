@@ -1,6 +1,7 @@
 package com.godel.olizarovich.services;
 
 import com.godel.olizarovich.dao.access.DirectorAccess;
+import com.godel.olizarovich.dao.access.FilmAccess;
 import com.godel.olizarovich.models.Director;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,10 +11,12 @@ import java.util.stream.Collectors;
 @org.springframework.stereotype.Service
 public class DirectorService {
     private DirectorAccess directorAccess;
+    private FilmAccess filmAccess;
 
     @Autowired
-    public DirectorService(DirectorAccess directorAccess) {
+    public DirectorService(DirectorAccess directorAccess, FilmAccess filmAccess) {
         this.directorAccess = directorAccess;
+        this.filmAccess = filmAccess;
     }
 
     public List<Director> getAll() {
@@ -40,7 +43,7 @@ public class DirectorService {
         return directorAccess.get(id);
     }
 
-    public long add(Director director) {
+    public long save(Director director) {
         return directorAccess.save(director);
     }
 
@@ -50,5 +53,9 @@ public class DirectorService {
 
     public boolean delete(Director director) {
         return directorAccess.delete(director);
+    }
+
+    public DirectorAccess getDirectorAccess() {
+        return directorAccess;
     }
 }

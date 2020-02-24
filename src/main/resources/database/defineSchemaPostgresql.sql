@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Director (
 
 CREATE TABLE IF NOT EXISTS Film (
 	id SERIAL PRIMARY KEY,
-	director_id INT REFERENCES director (id),
+	director_id INT REFERENCES director (id) ON DELETE CASCADE,
 	name VARCHAR NOT NULL,
 	release_date DATE NOT NULL,
 	genre VARCHAR NOT NULL

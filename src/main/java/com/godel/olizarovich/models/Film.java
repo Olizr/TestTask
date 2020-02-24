@@ -58,6 +58,7 @@ public class Film {
 
     public void setDirector(Director director) {
         this.director = director;
+        this.directorId = director.getId();
     }
 
     public String getName() {

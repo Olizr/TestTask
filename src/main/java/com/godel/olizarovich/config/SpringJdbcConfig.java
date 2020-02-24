@@ -28,6 +28,7 @@ public class SpringJdbcConfig {
 
     @Autowired
     private Environment environment;
+
     @Bean
     public DataSource postgresqlDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

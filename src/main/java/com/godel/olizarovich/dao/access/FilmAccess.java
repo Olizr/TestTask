@@ -3,7 +3,9 @@ package com.godel.olizarovich.dao.access;
 import com.godel.olizarovich.config.QueryConstant;
 import com.godel.olizarovich.models.Film;
 import com.godel.olizarovich.dao.mappers.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @Component
 public class FilmAccess implements Access<Film> {
+    private Logger logger = Logger.getLogger(FilmAccess.class);
+
     private final JdbcTemplate jdbcTemplate;
 
     private final String SQL_FIND;
@@ -37,7 +41,15 @@ public class FilmAccess implements Access<Film> {
 
     @Override
     public Film get(long id) {
-        return jdbcTemplate.queryForObject(SQL_FIND, new Object[] {id}, new FilmMapper());
+        Film film = null;
+        try {
+            film = jdbcTemplate.queryForObject(SQL_FIND, new Object[] {id}, new FilmMapper());
+        }
+        catch (EmptyResultDataAccessException e) {
+            logger.error("Object \"Film\" with id " + id + " not exist in database");
+        }
+
+        return film;
     }
 
     @Override
@@ -62,8 +74,8 @@ public class FilmAccess implements Access<Film> {
             return ps;
         }, keyHolder);
 
-        film.setId((int)keyHolder.getKey().longValue());
-        return keyHolder.getKey().longValue();
+        film.setId((int)keyHolder.getKeys().get("id"));
+        return film.getId();
     }
 
     @Override
@@ -79,5 +91,9 @@ public class FilmAccess implements Access<Film> {
     @Override
     public boolean delete(Film film) {
         return jdbcTemplate.update(SQL_DELETE, film.getId()) > 0;
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
     }
 }
